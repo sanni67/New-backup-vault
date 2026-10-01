@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  vault-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./vault_storage:/app/vault_storage
+      - ./vault.db:/app/vault.db
+    restart: always

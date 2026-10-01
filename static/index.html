@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ransomware-Resilient Backup Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+            <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-400">Immutable Backup Vault Dashboard</h1>
+                    <p class="text-xs text-gray-400">BIT-38: Ransomware-Resilient Vault with Immutable Retention Verification</p>
+                </div>
+            </div>
+            <button onclick="handleLogout()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded text-xs border border-gray-700 flex items-center space-x-1">
+                <span>🔒</span>
+                <span>Logout</span>
+            </button>
+        </div>
+
+        <!-- Authentication Panel -->
+        <div id="authSection" class="bg-gray-800 p-6 rounded-lg max-w-md mx-auto shadow-lg border border-gray-700">
+            <h2 class="text-lg font-semibold mb-4 text-blue-400">Vault Authentication</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Username</label>
+                    <input type="text" id="username" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Password</label>
+                    <input type="password" id="password" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm focus:outline-none focus:border-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded text-sm transition">Sign In</button>
+            </form>
+            <div id="loginError" class="mt-4 p-2 bg-red-900/50 border border-red-700 text-red-200 text-xs rounded hidden"></div>
+        </div>
+
+        <!-- Main Vault Dashboard -->
+        <div id="vaultSection" class="space-y-8 hidden">
+            
+            <!-- Upload Panel -->
+            <div class="bg-gray-800/60 p-6 rounded-lg border border-gray-800">
+                <h2 class="text-md font-semibold mb-4 text-blue-400">Upload File to Vault</h2>
+                <form onsubmit="handleUpload(event)" class="flex flex-wrap items-center gap-4">
+                    <div class="flex-1 min-w-[280px]">
+                        <input type="file" id="fileInput" class="w-full bg-gray-900 border border-gray-700 rounded p-1.5 text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-gray-800 file:text-gray-300 hover:file:bg-gray-700" required>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-gray-400 whitespace-nowrap">Retention Lock (Days):</label>
+                        <input type="number" id="retentionInput" min="1" value="7" class="w-20 bg-gray-900 border border-gray-700 rounded p-1.5 text-sm text-center focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded text-xs transition">Encrypt & Secure Backup</button>
+                </form>
+            </div>
+
+            <!-- Vault Inventory Table -->
+            <div class="bg-gray-800/60 p-6 rounded-lg border border-gray-800">
+                <h2 class="text-md font-semibold mb-4 text-blue-400">Vault File Inventory</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-900/80 text-gray-400 border-b border-gray-700">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Filename</th>
+                                <th class="p-3">Version</th>
+                                <th class="p-3">SHA-256 Digest</th>
+                                <th class="p-3">Retention Expiry</th>
+                                <th class="p-3">Lock Status</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vaultTableBody" class="divide-y divide-gray-800 text-gray-300">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Operational Audit Log Terminal -->
+            <div class="bg-gray-800/60 p-6 rounded-lg border border-gray-800">
+                <h2 class="text-md font-semibold mb-4 text-blue-400">Operational Audit Trail & Telemetry</h2>
+                <div id="auditLogTerminal" class="bg-black/90 p-4 rounded border border-gray-800 font-mono text-xs max-h-64 overflow-y-auto space-y-1">
+                    <!-- Terminal logs populated dynamically -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('vault_token');
+            const authSection = document.getElementById('authSection');
+            const vaultSection = document.getElementById('vaultSection');
+
+            if (token) {
+                if (authSection) authSection.classList.add('hidden');
+                if (vaultSection) vaultSection.classList.remove('hidden');
+            } else {
+                if (authSection) authSection.classList.remove('hidden');
+                if (vaultSection) vaultSection.classList.add('hidden');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            if (errorDiv) errorDiv.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('username', usernameInput);
+            formData.append('password', passwordInput);
+
+            try {
+                const res = await fetch('/api/v1/token', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('vault_token', data.access_token);
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    checkAuth();
+                    loadVault();
+                    loadLogs();
+                } else {
+                    const errData = await res.json();
+                    if (errorDiv) {
+                        errorDiv.textContent = errData.detail || "Authentication failed.";
+                        errorDiv.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('vault_token');
+            checkAuth();
+        }
+
+        async function loadVault() {
+            const token = localStorage.getItem('vault_token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/v1/backups', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) return;
+
+                const backups = await res.json();
+                const tbody = document.getElementById('vaultTableBody');
+                if (!tbody) return;
+
+                tbody.innerHTML = backups.map(b => {
+                    // Extract SHA-256 hash using fallbacks for different key names
+                    const digest = b.sha256_digest || b.sha256 || b.digest || '';
+                    const displayDigest = digest ? `${digest.substring(0, 12)}...` : 'N/A';
+
+                    // Extract Retention Expiry using fallbacks for different key names
+                    const expiry = b.retention_expiry || b.retention_until || b.expiry || '';
+                    
+                    let isLocked = false;
+                    let displayExpiry = 'N/A';
+
+                    if (expiry) {
+                        const normalizedExpiry = expiry.includes('T') ? expiry : expiry.replace(' ', 'T');
+                        const parsedDate = new Date(normalizedExpiry);
+                        if (!isNaN(parsedDate)) {
+                            isLocked = parsedDate > new Date();
+                            displayExpiry = expiry.split('.')[0];
+                        }
+                    }
+
+                    return `
+                        <tr class="hover:bg-gray-800/40">
+                            <td class="p-3">${b.id}</td>
+                            <td class="p-3 font-semibold text-white">${b.filename}</td>
+                            <td class="p-3 text-gray-400">v${b.version || 1}</td>
+                            <td class="p-3 font-mono text-amber-500">${displayDigest}</td>
+                            <td class="p-3 font-mono">${displayExpiry}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isLocked ? 'bg-red-950/80 text-red-400 border border-red-800' : 'bg-emerald-950/80 text-emerald-400 border border-emerald-800'}">
+                                    ${isLocked ? 'LOCKED' : 'EXPIRED'}
+                                </span>
+                            </td>
+                            <td class="p-3 space-x-1">
+                                <button onclick="verifyIntegrity(${b.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded text-[11px]">Verify Integrity</button>
+                                <button onclick="deleteBackup(${b.id})" class="bg-rose-700 hover:bg-rose-600 text-white px-2 py-1 rounded text-[11px]">Purge</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load vault inventory:", err);
+            }
+        }
+
+        async function handleUpload(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('vault_token');
+            const fileInput = document.getElementById('fileInput');
+            const retentionInput = document.getElementById('retentionInput').value;
+
+            if (!fileInput.files[0]) return;
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('retention_days', retentionInput);
+
+            try {
+                const res = await fetch('/api/v1/backups', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    fileInput.value = '';
+                    loadVault();
+                    loadLogs();
+                } else {
+                    const err = await res.json();
+                    alert("Upload failed: " + (err.detail || "Server error"));
+                }
+            } catch (err) {
+                alert("Error uploading asset: " + err.message);
+            }
+        }
+
+        async function verifyIntegrity(recordId) {
+            const token = localStorage.getItem('vault_token');
+            try {
+                const res = await fetch(`/api/v1/restore/${recordId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Integrity Check PASSED!\nSHA256: " + data.sha256_digest);
+                } else {
+                    alert("Integrity Check FAILED: " + (data.detail || "Tampering detected!"));
+                }
+                loadLogs();
+            } catch (err) {
+                alert("Error verifying integrity: " + err.message);
+            }
+        }
+
+        async function deleteBackup(recordId) {
+            const token = localStorage.getItem('vault_token');
+            try {
+                const res = await fetch(`/api/v1/backups/${recordId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Record purged successfully.");
+                    loadVault();
+                } else {
+                    alert("Purge Denied: " + (data.detail || "File is retention locked!"));
+                }
+                loadLogs();
+            } catch (err) {
+                alert("Error purging record: " + err.message);
+            }
+        }
+
+        async function loadLogs() {
+            const token = localStorage.getItem('vault_token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/v1/logs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) return;
+
+                const logs = await res.json();
+                const terminal = document.getElementById('auditLogTerminal');
+                if (!terminal) return;
+
+                terminal.innerHTML = logs.map(l => {
+                    const action = l.action_type || l.action || 'ACTION';
+                    const isSuccess = l.status === 'SUCCESS';
+                    const colorClass = isSuccess ? 'text-emerald-400' : 'text-rose-500';
+                    return `
+                        <div>
+                            <span class="${colorClass}">[${l.timestamp}] [${action}] [${l.status}]</span> 
+                            <span class="text-gray-300">- ${l.details}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load audit telemetry:", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadVault();
+            loadLogs();
+        });
+    </script>
+</body>
+</html>

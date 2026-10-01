@@ -1,0 +1,10 @@
+venv/
+backup-vault/venv/
+.venv/
+__pycache__/
+*.pyc
+master.key
+vault.db
+vault_storage/
+.pytest_cache/
+.vscode/
